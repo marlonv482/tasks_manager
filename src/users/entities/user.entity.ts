@@ -23,6 +23,6 @@ export class UsersEntity extends BaseEntity implements IUser{
     @Column()
     age:number;
     @OneToMany(()=>UsersProjectsEntity,(usersProjects)=>usersProjects.user)
-    projectIncludes:UsersProjectsEntity[]
+    projectsIncludes:UsersProjectsEntity[]
 
 }

@@ -10,9 +10,9 @@ export class UsersProjectsEntity extends BaseEntity  {
     @Column({type:'enum',enum:ACCESS_LEVEL})
     accessLevel:ACCESS_LEVEL;
 
-    @ManyToOne(()=>UsersEntity,(user)=>user.projectIncludes)
+    @ManyToOne(()=>UsersEntity,(user)=>user.projectsIncludes)
     user:UsersEntity;
 
-    @ManyToOne(()=>ProjectsEntity,(project)=>project.userIncludes)
+    @ManyToOne(()=>ProjectsEntity,(project)=>project.usersIncludes)
     project:ProjectsEntity
 }

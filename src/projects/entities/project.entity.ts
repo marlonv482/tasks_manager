@@ -13,5 +13,5 @@ export class ProjectsEntity extends BaseEntity implements IProject{
     description:string;
 
     @OneToMany(()=>UsersProjectsEntity,(usersProjects)=>usersProjects.project)
-    userIncludes:UsersProjectsEntity
+    usersIncludes:UsersProjectsEntity
    }
