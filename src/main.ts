@@ -1,8 +1,32 @@
+import { ConfigService } from '@nestjs/config';
+import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
+import * as morgan from 'morgan';
+import { CORS } from './constants';
+import { ValidationPipe } from '@nestjs/common';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
-  await app.listen(3000);
+  
+  app.use(morgan('dev'));
+  app.useGlobalPipes(new ValidationPipe({
+    transformOptions:{
+      enableImplicitConversion:true
+    }
+  }))
+  const configService = app.get(ConfigService);
+  app.enableCors(CORS)
+  app.setGlobalPrefix('api');
+  const options = new DocumentBuilder()
+  .setTitle('Nest Workshop')
+  .setDescription('Nest Workshop')
+  .setVersion('1.0')
+  .build();
+const document = SwaggerModule.createDocument(app, options);
+SwaggerModule.setup('api', app, document);
+
+  await app.listen(configService.get('PORT'));
+  console.log(`Application running on: ${await app.getUrl()}`)
 }
 bootstrap();
