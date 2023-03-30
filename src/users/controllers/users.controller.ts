@@ -1,17 +1,22 @@
 import { UserDTO, UserToProjectDTO, UserUpdateDTO } from './../dto/user.dto';
-import { Body, Controller, Delete, Get, Param, Post, Put } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post, Put, UseGuards } from '@nestjs/common';
 import { UsersService } from '../services/users.service';
 import { ApiTags } from '@nestjs/swagger';
+import { PublicAcces } from 'src/auth/decorators/public.decorator';
+import { AuthGuard } from 'src/auth/guards/auth.guard';
 
 @Controller('users')
 @ApiTags('Users')
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
+  @PublicAcces()
   @Get('all')
   public async getAllUsers() {
     return await this.usersService.getAllUsers();
   }
+
+  @UseGuards(AuthGuard)
   @Get(':id')
   public async getUserById(@Param('id') id:string){
     return this.usersService.getUserById(id)
@@ -36,3 +41,5 @@ export class UsersController {
     return await this.usersService.relationToProject(body)
   }
 }
+
+
