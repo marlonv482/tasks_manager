@@ -3,21 +3,26 @@ import { Body, Controller, Delete, Get, Param, Post, Put, UseGuards } from '@nes
 import { UsersService } from '../services/users.service';
 import { ApiTags } from '@nestjs/swagger';
 import { PublicAcces } from 'src/auth/decorators/public.decorator';
+import { AdminAccess } from 'src/auth/decorators/admin.decorator';
 import { AuthGuard } from 'src/auth/guards/auth.guard';
+import { Roles } from 'src/auth/decorators/roles.decorator';
+import { RolesGuard } from 'src/auth/guards/roles.guard';
 
 @Controller('users')
 @ApiTags('Users')
+@UseGuards(AuthGuard, RolesGuard)
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
   @PublicAcces()
-  @Get('all')
+  @Get('getAllUsers')
   public async getAllUsers() {
     return await this.usersService.getAllUsers();
   }
 
-  @UseGuards(AuthGuard)
+ 
   @Get(':id')
+  @Roles('ADMIN')
   public async getUserById(@Param('id') id:string){
     return this.usersService.getUserById(id)
   }
@@ -28,9 +33,11 @@ export class UsersController {
   }
 
   @Put(':id')
+ @AdminAccess()
   public async updateUser(@Body() body:UserUpdateDTO,@Param('id') id:string){
     return this.usersService.updateUser(body,id)
   }
+  
   @Delete(':id')
   public async deleteUser(@Param(':id') id:string){
     return this.usersService.deleteUser(id);

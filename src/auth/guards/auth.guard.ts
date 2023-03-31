@@ -6,7 +6,7 @@ import { CanActivate, ExecutionContext, Injectable } from '@nestjs/common';
 import { UsersService } from 'src/users/services/users.service';
 import { UnauthorizedException } from '@nestjs/common/exceptions';
 import { IUseToken } from '../interfaces/auth.interface';
-
+import { Request } from 'express';
 @Injectable()
 export class AuthGuard implements CanActivate {
   constructor (
@@ -32,6 +32,7 @@ export class AuthGuard implements CanActivate {
     if(!token || Array.isArray(token)){
       throw new UnauthorizedException('Invalid Token');
     }
+    
     const manageToken:IUseToken | string =useToken(token)
 
     if(typeof manageToken==='string'){
@@ -41,14 +42,17 @@ export class AuthGuard implements CanActivate {
     if(manageToken.isExpired){
       throw new UnauthorizedException('Invalid Token');
     }
+
     const {sub}=manageToken;
     const user=await this.userService.getUserById(sub)
 
     if(!user){
       throw new UnauthorizedException('Invalid User');
     }
-    //req.idUser=user.id
-    //req.roleUser=user.role
+
+    req.idUser=user.id
+    req.roleUser=user.role
+    
     return true;
   }
 }
