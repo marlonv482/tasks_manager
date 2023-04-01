@@ -4,9 +4,19 @@ import { ErrorManager } from 'src/utils/errors.manager';
 import { Repository, DeleteResult, UpdateResult } from 'typeorm';
 import { ProjectsDTO, ProjectsUpdateDTO } from '../dto/projects.dto';
 import { ProjectsEntity } from '../entities/project.entity';
+import { UsersProjectsEntity } from 'src/users/entities/usersProjects.entity';
+import { ACCESS_LEVEL } from 'src/constants';
+import { UsersService } from 'src/users/services/users.service';
 
 @Injectable()
 export class ProjectsService {
+  constructor(
+    @InjectRepository(ProjectsEntity)
+    private readonly projectRepository: Repository<ProjectsEntity>,
+    private readonly usersService:UsersService,
+    @InjectRepository(UsersProjectsEntity)
+    private readonly usersProjectRepository: Repository<UsersProjectsEntity>,
+  ) {}
   /**
    *
    * @param id
@@ -57,9 +67,16 @@ export class ProjectsService {
  * @param body 
  * @returns 
  */
-  public async createProject(body: ProjectsDTO): Promise<ProjectsEntity> {
+  public async createProject(body: ProjectsDTO,userId:string): Promise<ProjectsEntity> {
     try {
-      return await this.projectRepository.save(body);
+      const user=await this.usersService.getUserById(userId)
+      const project=await this.projectRepository.save(body);
+      await this.usersProjectRepository.save(
+       { accessLevel:ACCESS_LEVEL.OWNER,
+      user:user,
+    project}
+      )
+      return project;
     } catch (error) {
       throw ErrorManager.createSignatureError(error.message);
     }
@@ -88,10 +105,7 @@ export class ProjectsService {
     }
   }
 
-  constructor(
-    @InjectRepository(ProjectsEntity)
-    private readonly projectRepository: Repository<ProjectsEntity>,
-  ) {}
+
 
 
   /**

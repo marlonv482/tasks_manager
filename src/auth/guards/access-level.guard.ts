@@ -38,7 +38,6 @@ export class AccessLevelGuard implements CanActivate {
     const admin = this.reflector.get<string>(ADMIN_KEY, context.getHandler());
     const req = context.switchToHttp().getRequest<Request>();
     const { roleUser, idUser } = req;
-    console.log(admin)
     if (accessLevel === undefined) {
       if (roles === undefined) {
         if (!admin) {
@@ -55,7 +54,7 @@ export class AccessLevelGuard implements CanActivate {
       }
     }
 
-    if (roleUser === ROLES.ADMIN) {
+    if (roleUser === ROLES.ADMIN || roleUser === ROLES.CREATOR) {
       return true;
     }
     const user = await this.userService.getUserById(idUser);
@@ -67,7 +66,7 @@ export class AccessLevelGuard implements CanActivate {
     if (userExistInProject === undefined) {
       throw new UnauthorizedException('No formas parte del proyecto');
     }
-    if (ACCESS_LEVEL[accessLevel] !== userExistInProject.accessLevel) {
+    if (ACCESS_LEVEL[accessLevel] > userExistInProject.accessLevel) {
       throw new UnauthorizedException(
         'No tienes el nivel de acceso necesario en el proyecto',
       );

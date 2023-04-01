@@ -25,12 +25,12 @@ async function bootstrap() {
   app.setGlobalPrefix('api');
   
   const options = new DocumentBuilder()
-  .setTitle('Nest Workshop')
-  .setDescription('Nest Workshop')
+  .setTitle('Task Manager')
+  .setDescription('Task Manager Application')
   .setVersion('1.0')
   .build();
 const document = SwaggerModule.createDocument(app, options);
-SwaggerModule.setup('api', app, document);
+SwaggerModule.setup('docs', app, document);
 
   await app.listen(configService.get('PORT'));
   console.log(`Application running on: ${await app.getUrl()}`)

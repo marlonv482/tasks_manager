@@ -6,12 +6,13 @@ import { AuthGuard } from 'src/auth/guards/auth.guard';
 import { RolesGuard } from 'src/auth/guards/roles.guard';
 import { AccessLevelGuard } from 'src/auth/guards/access-level.guard';
 import { AccessLevel } from 'src/auth/decorators/access-level.decorators';
+import { Roles } from 'src/auth/decorators/roles.decorator';
 
 @Controller('projects')
 @ApiTags('Projects')
 @UseGuards(AuthGuard,RolesGuard,AccessLevelGuard)
 export class ProjectsController {
-    constructor(private projectsService:ProjectsService ){
+    constructor(private readonly projectsService:ProjectsService ){
 
     }
     @Get()
@@ -25,9 +26,10 @@ export class ProjectsController {
         return this.projectsService.getProjectById(id);
     }
 
-    @Post()
-    public async createProject(@Body() body:ProjectsDTO){
-        return this.projectsService.createProject(body);
+    @Roles('CREATOR')
+    @Post('userOwner/:userId')
+    public async createProject(@Body() body:ProjectsDTO,@Param('userId') userId:string){
+        return this.projectsService.createProject(body,userId);
     }
     @Delete(':projectId')
     public async deleteProject(@Param('projectId') id:string){
