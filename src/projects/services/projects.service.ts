@@ -7,6 +7,7 @@ import { ProjectsEntity } from '../entities/project.entity';
 import { UsersProjectsEntity } from 'src/users/entities/usersProjects.entity';
 import { ACCESS_LEVEL } from 'src/constants';
 import { UsersService } from 'src/users/services/users.service';
+import { HttpCustomService } from 'src/providers/http/http.service';
 
 @Injectable()
 export class ProjectsService {
@@ -16,6 +17,7 @@ export class ProjectsService {
     private readonly usersService:UsersService,
     @InjectRepository(UsersProjectsEntity)
     private readonly usersProjectRepository: Repository<UsersProjectsEntity>,
+    private readonly httpService:HttpCustomService
   ) {}
   /**
    *
@@ -125,5 +127,9 @@ export class ProjectsService {
     } catch (error) {
       throw ErrorManager.createSignatureError(error.message);
     }
+  }
+
+  public async listApi(){
+    return await this.httpService.findAll();
   }
 }

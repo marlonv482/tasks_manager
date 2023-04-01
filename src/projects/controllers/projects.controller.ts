@@ -39,4 +39,9 @@ export class ProjectsController {
     public async updateProject(@Body() body:ProjectsUpdateDTO,@Param('projectId') id:string){
         return this.projectsService.updateProject(body,id);
     }
+
+    @Get('list/api')
+    public async listApi(){
+        return await this.projectsService.listApi();
+    }
 }
